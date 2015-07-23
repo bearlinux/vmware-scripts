@@ -3,14 +3,13 @@ These are miscilanious scripts for working with vmware.
 
 The basic idea of these vmware groovy scripts is that you start your script off with needed imports  
 
-`
-#!/bin/env groovy  
-@Grab(group='com.vmware', module='vijava', version='5.1')  
 
-import java.net.URL;
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-`
+`#!/bin/env groovy`
+`@Grab(group='com.vmware', module='vijava', version='5.1')`
+
+`import java.net.URL;`
+`import com.vmware.vim25.*;`
+`import com.vmware.vim25.mo.*;`
 
 you then  create a connection to the server using a ServiceInstance object
 
