@@ -1,5 +1,5 @@
 # vmware-scripts
-These are miscilanious scripts for working with vmware.  
+These are miscellaneous scripts for working with vmware.  
 
 The basic idea of these vmware groovy scripts is that you start your script off with needed imports  
 
