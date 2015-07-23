@@ -1,0 +1,81 @@
+#!/bin/env groovy
+package com.owteam.bearware.vmwaretest;
+@Grab('com.vmware:vijava:5.1')
+@Grab('com.owteam.engUtils:netrc:2.0.0' )
+
+import java.net.URL;
+import com.vmware.vim25.*;
+import com.vmware.vim25.mo.*;
+import com.vmware.vim25.mo.util.*;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import com.owteam.engUtils.netrc.Netrc;
+
+/**
+ * Class for destroying VMs, don't edit this unless you can rewrite from scratch
+ *
+ */
+public class VmDestroy {
+
+	public static void main(String[] args) {
+
+		try {
+			String vmName = "I-need-a-box-name";
+			if(args.length>0 && args[0].length()>0){
+				vmName=args[0];
+			}else{
+				System.err.println("usage: VmDestroy vmName");
+				System.exit(1);
+			}
+			String vcenterHost="vcenter.fqdn";
+			URL vcenterURL=new URL("https://${vcenterHost}/sdk/");
+        		def creds = Netrc.getInstance().getCredentials(vcenterHost);
+        		if(creds == null){
+                		System.err.println("No credentials found, please add a .netrc entry for phx-vcenter01.wineng.owteam.com");
+                		System.exit(1);
+        		}
+        		ServiceInstance si = new ServiceInstance(vcenterURL, creds.getUserName(), creds.getPassword(), true);
+			Folder rootFolder = si.getRootFolder();
+			ManagedEntity vmm = new InventoryNavigator(rootFolder).searchManagedEntity("VirtualMachine", vmName);
+			VirtualMachine vm = (VirtualMachine) vmm;
+			System.out.println("Are you sure you want to delete " + vmm.getName());
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			if ("yes".equalsIgnoreCase(br.readLine())) {
+				Task powerOffTask = vm.powerOffVM_Task();
+
+				while (powerOffTask.getTaskInfo().getState().equals(TaskInfoState.running)) {
+					Thread.sleep(2000);
+					System.out.println("Percentage complete: " + powerOffTask.getTaskInfo().progress);
+				}
+				if (powerOffTask.getTaskInfo().getState().equals(TaskInfoState.success)) {
+
+				}
+				String PowerOffCompletionTime = (new SimpleDateFormat()).format(powerOffTask.getTaskInfo().completeTime.getTime());
+				System.out.println("PowerOff finished at " + PowerOffCompletionTime + " with state " + powerOffTask.getTaskInfo().state.toString());
+				Task destroyTask = vm.destroy_Task();
+
+				while (destroyTask.getTaskInfo().getState().equals(TaskInfoState.running)) {
+					Thread.sleep(2000);
+					System.out.println("Percentage complete: " + destroyTask.getTaskInfo().progress);
+				}
+				if (destroyTask.getTaskInfo().getState().equals(TaskInfoState.success)) {
+
+				}
+				String destroyCompletionTime = (new SimpleDateFormat()).format(destroyTask.getTaskInfo().completeTime.getTime());
+				System.out.println("Destroy finished at " + destroyCompletionTime + " with state " + destroyTask.getTaskInfo().state.toString());
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+}
