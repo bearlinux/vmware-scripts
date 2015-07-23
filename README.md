@@ -21,8 +21,6 @@ You'll want to use an InventoryNavigator to search for things(Datacenter,Virtual
 
 You can loop through using the results and cast the objects appropriately  
 
-There is a utility class for converting but you can just cast some things.  
-
 
 `for (ManagedEntity m : mes) {`  
 `	VirtualMachine vm = (VirtualMachine) m;`  
