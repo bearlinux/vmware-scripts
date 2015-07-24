@@ -27,4 +27,3 @@ You can loop through using the results and cast the objects appropriately
 `	println("${vm.getName()} ${vm.getRuntime().getHost().getName()}");`  
 `}`  
 
-These scripts will be updated tomorrow. Once I've cleaned them up a little.  
